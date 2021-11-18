@@ -9,6 +9,7 @@ Transfer between two accounts
 </ol>
  
 ## Steps
-<ul>
+<ol>
  <li>$ java -jar demo-0.0.1-SNAPSHOT.jar</li>
-</ul>
+ <li>http://localhost:8080/transfer</li>
+</ol>
