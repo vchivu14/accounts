@@ -3,6 +3,7 @@ package com.example.demo.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
@@ -24,4 +25,13 @@ public class Account {
     @JoinColumn(name = "Users_id", referencedColumnName = "id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "account")
+    private List<Transactions> transactions;
+
+    public Account(Integer id, String number, Double amount, User user) {
+        this.id = id;
+        this.number = number;
+        this.amount = amount;
+        this.user = user;
+    }
 }

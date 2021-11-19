@@ -1,11 +1,14 @@
 package com.example.demo.services;
 
+import com.example.demo.dtos.TransactionDTO;
 import com.example.demo.dtos.TransferDTO;
 import com.example.demo.dtos.UserShowDTO;
 import com.example.demo.entities.Account;
+import com.example.demo.entities.Transactions;
 import com.example.demo.entities.User;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.repos.AccountRepo;
+import com.example.demo.repos.TransactionRepo;
 import com.example.demo.repos.UserRepo;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +20,13 @@ import java.util.List;
 public class TransferServicesImp implements TransferServices {
     private AccountRepo accountRepo;
     private UserRepo userRepo;
+    private TransactionRepo transactionRepo;
 
-    public TransferServicesImp(AccountRepo accountRepo, UserRepo userRepo) {
+    public TransferServicesImp(AccountRepo accountRepo, UserRepo userRepo,
+                               TransactionRepo transactionRepo) {
         this.accountRepo = accountRepo;
         this.userRepo = userRepo;
+        this.transactionRepo = transactionRepo;
     }
 
     private String errorMessage(Integer id){
@@ -45,8 +51,28 @@ public class TransferServicesImp implements TransferServices {
         accountRepo.save(accountSender);
         accountReceiver.setAmount(accountReceiver.getAmount() - transferDTO.getAmount());
         accountRepo.save(accountReceiver);
+
+        transactionRepo.save(new Transactions(accountReceiver.getId(),transferDTO.getAmount(),accountSender));
     }
 
+    private TransactionDTO getTransaction(Transactions transaction) {
+        TransactionDTO transactionDTO = new TransactionDTO();
+        transactionDTO.setAmount(transaction.getAmount());
+        User user = accountRepo.getById(transaction.getReceiverAccountId()).getUser();
+        String username = user.getFirstName().concat("_").concat(user.getLastName());
+        transactionDTO.setReceiverUsername(username);
+        Account account = accountRepo.getById(transaction.getReceiverAccountId());
+        transactionDTO.setReceiverAccount(account.getNumber());
+        return transactionDTO;
+    }
+    private List<TransactionDTO> getTransactions(int accountId) {
+        List<Transactions> transactions = transactionRepo.findAllByAccount_Id(accountId);
+        List<TransactionDTO> transactionDTOS = new ArrayList<>();
+        for (Transactions t: transactions) {
+            transactionDTOS.add(getTransaction(t));
+        }
+        return transactionDTOS;
+    }
     @Override
     public UserShowDTO getUserShowDTO(Integer userId) {
         User user = getUserById(userId);
@@ -57,6 +83,7 @@ public class TransferServicesImp implements TransferServices {
         userShowDTO.setLastName(user.getLastName());
         userShowDTO.setAccountNumber(userAccount.getNumber());
         userShowDTO.setAccountAmount(userAccount.getAmount());
+        userShowDTO.setTransactionsList(getTransactions(userAccount.getId()));
         return userShowDTO;
     }
 

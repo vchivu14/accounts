@@ -18,6 +18,9 @@
                 <th>Last Name</th>
                 <th>Account Number</th>
                 <th>Account Amount</th>
+                <th>
+                    Transactions
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -27,6 +30,27 @@
                 <td th:text="${u.lastName}"></td>
                 <td th:text="${u.accountNumber}"></td>
                 <td th:text="${u.accountAmount}"></td>
+                <td>
+                        <h6>Transaction</h6>
+                        <table class="order-table table">
+                            <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Receiver Name</th>
+                                <th>Receiver Account</th>
+                                <th>Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="container" th:each="t : ${u.transactionsList}">
+                                <td th:text="${u.transactionsList.indexOf(t)+1}"></td>
+                                <td th:text="${t.receiverUsername}"></td>
+                                <td th:text="${t.receiverAccount}"></td>
+                                <td th:text="${t.amount}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                </td>
             </tr>
             </tbody>
         </table>
