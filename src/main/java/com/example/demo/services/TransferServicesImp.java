@@ -49,7 +49,7 @@ public class TransferServicesImp implements TransferServices {
 
         accountSender.setAmount(accountSender.getAmount() - transferDTO.getAmount());
         accountRepo.save(accountSender);
-        accountReceiver.setAmount(accountReceiver.getAmount() - transferDTO.getAmount());
+        accountReceiver.setAmount(accountReceiver.getAmount() + transferDTO.getAmount());
         accountRepo.save(accountReceiver);
 
         transactionRepo.save(new Transactions(accountReceiver.getId(),transferDTO.getAmount(),accountSender));
